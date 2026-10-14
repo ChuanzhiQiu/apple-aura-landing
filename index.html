@@ -620,12 +620,16 @@
 
   <script src="script.js"></script>
   <script>
-    // Envía el evento clic_cta_principal cuando el visitante hace clic en el CTA
-    document.querySelectorAll('#cta-principal, .cta-principal').forEach(function (boton) {
+    // Mide las interacciones con los botones principales del Hero ("Conoce a Aura" y "Ver el anuncio")
+    document.querySelectorAll('.hero-cta a').forEach(function (boton) {
       boton.addEventListener('click', function () {
+        var ctaTexto = boton.textContent.replace('›', '').trim();
         var seccion = boton.closest('section');
-        gtag('event', 'clic_cta_principal', {
-          ubicacion: seccion && seccion.id ? seccion.id : 'sin_seccion'
+
+        gtag('event', 'clic_cta_hero', {
+          cta_nombre: ctaTexto,
+          cta_tipo: boton.classList.contains('btn-primary') ? 'primario' : 'secundario',
+          ubicacion: seccion && seccion.id ? seccion.id : (seccion && seccion.className ? seccion.className.split(' ')[0] : 'hero')
         });
       });
     });
