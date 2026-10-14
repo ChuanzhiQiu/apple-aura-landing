@@ -56,23 +56,11 @@
     if (speed) col.style.setProperty('--dur', speed + 's');
   });
 
-  /* ---------- Pause the animation when the hero is off-screen ---------- */
-  var hero = document.getElementById('hero');
-  var tracks = document.querySelectorAll('.col-track');
-
-  if (hero && 'IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          tracks.forEach(function (track) {
-            track.style.animationPlayState = entry.isIntersecting ? '' : 'paused';
-          });
-        });
-      },
-      { threshold: 0 }
-    );
-    observer.observe(hero);
-  }
+  /* ---------- Rotating columns run non-stop ----------
+     The columns are animated with pure CSS on a GPU-composited layer.
+     Do NOT add IntersectionObserver / animationPlayState toggling here:
+     pausing on hover or scroll made the motion stutter depending on where
+     the pointer was, which was the reported bug. */
 
   /* ---------- Subtle header state on scroll ---------- */
   var header = document.getElementById('siteHeader');

@@ -198,7 +198,12 @@ button {
 .col-track {
   display: flex;
   flex-direction: column;
+  /* Promote the moving track to its own compositor layer so the infinite
+     animation runs on the GPU and never repaints the page. */
   will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .col-set {
@@ -206,29 +211,34 @@ button {
   flex-direction: column;
   gap: 22px;
   padding-bottom: 22px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .col-up .col-track {
   animation: scrollUp linear infinite;
+  animation-timing-function: linear;
   animation-duration: var(--dur, 46s);
 }
 .col-down .col-track {
   animation: scrollDown linear infinite;
+  animation-timing-function: linear;
   animation-duration: var(--dur, 54s);
 }
 
+/* translate3d keeps the animation composited (GPU) on every frame. */
 @keyframes scrollUp {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -50%, 0); }
 }
 @keyframes scrollDown {
-  from { transform: translateY(-50%); }
-  to   { transform: translateY(0); }
+  from { transform: translate3d(0, -50%, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
 
-.hero:hover .col-track {
-  animation-play-state: paused;
-}
+/* NOTE: no `.hero:hover` / `animation-play-state: paused` here on purpose.
+   The hero fills the viewport, so a hover rule paused the columns almost
+   everywhere and made the motion stutter depending on the pointer position. */
 
 /* --- cards (shared) --- */
 .card {
@@ -237,11 +247,15 @@ button {
   padding: 18px;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
   border: 1px solid var(--card-border);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  backdrop-filter: blur(22px) saturate(150%);
+  /* No backdrop-filter: it cannot be composited cheaply and forced the
+     browser to re-sample the backdrop every frame while the card was
+     moving inside the infinite column animation. */
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   color: var(--text);
   overflow: hidden;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .card-top {
@@ -498,9 +512,7 @@ button {
   font-weight: 600;
   padding: 5px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -583,6 +595,10 @@ button {
     radial-gradient(circle at 70% 60%, rgba(191, 90, 242, 0.5), transparent 45%),
     radial-gradient(circle at 50% 90%, rgba(255, 159, 10, 0.35), transparent 45%);
   filter: blur(24px);
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: aurora 12s ease-in-out infinite alternate;
 }
 .card-glow .card-title,
