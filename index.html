@@ -619,6 +619,17 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // Envía el evento clic_cta_principal cuando el visitante hace clic en el CTA
+    document.querySelectorAll('#cta-principal, .cta-principal').forEach(function (boton) {
+      boton.addEventListener('click', function () {
+        var seccion = boton.closest('section');
+        gtag('event', 'clic_cta_principal', {
+          ubicacion: seccion && seccion.id ? seccion.id : 'sin_seccion'
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>
